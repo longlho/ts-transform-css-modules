@@ -1,0 +1,42 @@
+{
+  "name": "ts-transform-css-modules-transform",
+  "version": "0.1.0",
+  "description": "Extract CSS classnames in TS files",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "test": "rm -rf test/fixture/*.js && mocha --compilers ts:ts-node/register",
+    "prepublish": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/longlho/ts-transform-css-modules-transform.git"
+  },
+  "keywords": [
+    "typescript",
+    "transform",
+    "css-modules",
+    "modules"
+  ],
+  "author": "Long Ho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/longlho/ts-transform-css-modules-transform/issues"
+  },
+  "homepage": "https://github.com/longlho/ts-transform-css-modules-transform#readme",
+  "devDependencies": {
+    "@types/chai": "^3.5.2",
+    "@types/fs-extra": "^2.1.0",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.14",
+    "chai": "^3.5.0",
+    "fs-extra": "^3.0.0",
+    "glob": "^7.1.1",
+    "mocha": "^3.3.0",
+    "ts-node": "^3.0.2",
+    "typescript": "^2.4.0-dev.20170428"
+  },
+  "dependencies": {
+    "css-modules-require-hook": "^4.0.6"
+  }
+}

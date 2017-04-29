@@ -1,0 +1,8 @@
+.foo2 {
+    color: white;
+}
+
+.bar2 {
+    composes: foo2;
+    background-color: black;
+}
