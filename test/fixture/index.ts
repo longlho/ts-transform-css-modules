@@ -1,9 +1,10 @@
 import * as foo from './foo.css'
-import * as bar from './bar.css'
+const bar = require('./bar.css')
 
 export default function getCss () {
     return {
         ...foo,
-        ...bar
+        ...bar,
+        ...require('./baz.css')
     }
 }

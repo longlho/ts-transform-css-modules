@@ -1,6 +1,6 @@
 {
   "name": "ts-transform-css-modules-transform",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Extract CSS classnames in TS files",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

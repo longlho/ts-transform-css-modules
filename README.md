@@ -4,7 +4,12 @@ Extract css class names from required css module files for TypeScript. This plug
 This allows you to do this in TS files:
 
 ```ts
+// Import works
 import * as css from 'foo.css'
+// require also works
+const foo = require('foo.css')
 
 console.log(css.foo)
 ```
+
+Append this to `before` in your compilation step
