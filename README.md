@@ -12,7 +12,7 @@ const foo = require('foo.css')
 console.log(css.foo)
 ```
 
-Append this to `before` in your compilation step. See [compile.ts](./compile.ts) for more info.
+Append this to `before` in your compilation step. See [compile.ts](https://github.com/longlho/ts-transform-css-modules-transform/blob/master/compile.ts#L30-L32) for more info.
 
 Right now named imports will not work due to TS mangling import name after compilation.
 
