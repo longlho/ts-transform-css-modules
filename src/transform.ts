@@ -56,20 +56,50 @@ function generateClassNameObj (sf: ts.SourceFile, cssPath: string): ts.ObjectLit
 
 function importVisitor (sf: ts.SourceFile, node: ts.Node): ts.Node {
     let cssPath: string = (node as ts.ImportDeclaration).moduleSpecifier.getText()
-    const classNameObj = generateClassNameObj(sf, cssPath)
+    let classNameObj
+    try {
+        classNameObj = generateClassNameObj(sf, cssPath)
+    } catch (e) {
+        console.error(e)
+        return
+    }
+
 
     // This is the "foo" from "import * as foo from 'foo.css'"
-    const importVar = ((node as ts.ImportDeclaration).importClause.namedBindings as ts.NamespaceImport).name.getText()
-
+    const { namedBindings } = (node as ts.ImportDeclaration).importClause
+    let varDecl
     const cssVarStatement = ts.createNode(ts.SyntaxKind.VariableStatement) as ts.VariableStatement
+    switch (namedBindings.kind) {
+    // Dealing with "import { container } from 'foo.css'"
+    // TODO: Currently import var decl name is generated so this isn't working
+    // case ts.SyntaxKind.NamedImports:
+    //     const importVars = namedBindings.elements.map(name => name.name.getText())
 
-    cssVarStatement.declarationList = ts.createNode(ts.SyntaxKind.VariableDeclarationList) as ts.VariableDeclarationList
-    const varDecl = ts.createNode(ts.SyntaxKind.VariableDeclaration) as ts.VariableDeclaration
-    varDecl.name = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
-    varDecl.name.text = importVar
-    varDecl.initializer = classNameObj
-    cssVarStatement.declarationList.declarations = [varDecl] as ts.NodeArray<ts.VariableDeclaration>
-    return cssVarStatement
+    //     cssVarStatement.declarationList = ts.createNode(ts.SyntaxKind.VariableDeclarationList) as ts.VariableDeclarationList
+    //     varDecl = ts.createNode(ts.SyntaxKind.VariableDeclaration) as ts.VariableDeclaration
+    //     varDecl.name = ts.createNode(ts.SyntaxKind.ObjectBindingPattern) as ts.ObjectBindingPattern
+    //     varDecl.name.elements = importVars.map(name => {
+    //         const varEl = ts.createNode(ts.SyntaxKind.BindingElement) as ts.BindingElement
+    //         varEl.name = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
+    //         varEl.name.text = name
+    //         return varEl
+    //     })
+    //     varDecl.initializer = classNameObj
+    //     cssVarStatement.declarationList.declarations = [varDecl] as ts.NodeArray<ts.VariableDeclaration>
+    //     return cssVarStatement
+    // Dealing with "import * as css from 'foo.css'"
+    case ts.SyntaxKind.NamespaceImport:
+        const importVar = namedBindings.name.getText()
+        // Create 'var css = {}'
+
+        cssVarStatement.declarationList = ts.createNode(ts.SyntaxKind.VariableDeclarationList) as ts.VariableDeclarationList
+        varDecl = ts.createNode(ts.SyntaxKind.VariableDeclaration) as ts.VariableDeclaration
+        varDecl.name = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
+        varDecl.name.text = importVar
+        varDecl.initializer = classNameObj
+        cssVarStatement.declarationList.declarations = [varDecl] as ts.NodeArray<ts.VariableDeclaration>
+        return cssVarStatement
+    }
 }
 
 function visitor(ctx: ts.TransformationContext, sf: ts.SourceFile) {
@@ -77,7 +107,7 @@ function visitor(ctx: ts.TransformationContext, sf: ts.SourceFile) {
         switch (node.kind) {
         case ts.SyntaxKind.ImportDeclaration:
             if (CSS_EXTENSION_REGEX.test((node as ts.ImportDeclaration).moduleSpecifier.getText())) {
-                return importVisitor(sf, node)
+                return importVisitor(sf, node) || ts.visitEachChild(node, visitor, ctx)
             }
             break
         case ts.SyntaxKind.CallExpression:
@@ -85,9 +115,12 @@ function visitor(ctx: ts.TransformationContext, sf: ts.SourceFile) {
                 (node as ts.CallExpression).expression.getText() === 'require' &&
                 CSS_EXTENSION_REGEX.test((node as ts.CallExpression).arguments[0].getText())
             ) {
-                return generateClassNameObj(sf, (node as ts.CallExpression).arguments[0].getText())
+                try {
+                    return generateClassNameObj(sf, (node as ts.CallExpression).arguments[0].getText())
+                } catch (e) {
+                    console.error(e)
+                }
             }
-            break
         }
         return ts.visitEachChild(node, visitor, ctx)
     }
