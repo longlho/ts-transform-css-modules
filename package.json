@@ -1,5 +1,5 @@
 {
-  "name": "ts-transform-css-modules-transform",
+  "name": "ts-transform-css-modules",
   "version": "0.1.3",
   "description": "Extract CSS classnames in TS files",
   "main": "dist/index.js",

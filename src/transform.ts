@@ -42,7 +42,7 @@ function generateClassNameObj (sf: ts.SourceFile, cssPath: string): ts.ObjectLit
     const classNameObj = ts.createNode(ts.SyntaxKind.ObjectLiteralExpression) as ts.ObjectLiteralExpression
     classNameObj.properties = Object.keys(css).map(k => {
         const obj = ts.createNode(ts.SyntaxKind.PropertyAssignment) as ts.PropertyAssignment
-        const key = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
+        const key = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
         const value = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
         key.text = k
         value.text = css[k]

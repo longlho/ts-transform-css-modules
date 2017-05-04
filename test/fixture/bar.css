@@ -6,3 +6,7 @@
     composes: foo2;
     background-color: black;
 }
+
+.foo-asd {
+    color: black;
+}

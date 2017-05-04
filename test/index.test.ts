@@ -10,6 +10,7 @@ describe('ts-transform-css-modules', function () {
             bar2: "bar__bar2___2PTAu bar__foo2___3ly2x",
             foo: "foo__foo___3p56d",
             foo2: "bar__foo2___3ly2x",
+            'foo-asd': "bar__foo-asd___9jX6V",
             goo: "baz__goo___1DlUX"
         })
     })
