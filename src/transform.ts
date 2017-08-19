@@ -64,6 +64,11 @@ function importVisitor(sf: ts.SourceFile, node: ts.Node): ts.Node {
         return
     }
 
+    // No import clause, skip
+    if (!(node as ts.ImportDeclaration).importClause) {
+        return
+    }
+
     // This is the "foo" from "import * as foo from 'foo.css'"
     const { namedBindings } = (node as ts.ImportDeclaration).importClause
     // Dealing with "import * as css from 'foo.css'" only since namedImports variables get mangled
