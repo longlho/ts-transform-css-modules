@@ -40,7 +40,7 @@ function generateClassNameObj(sf: ts.SourceFile, cssPath: string): ts.ObjectLite
 
     const css = require(cssPath)
     const classNameObj = ts.createNode(ts.SyntaxKind.ObjectLiteralExpression) as ts.ObjectLiteralExpression
-    classNameObj.properties = Object.keys(css).map(k => {
+    classNameObj.properties = ts.createNodeArray(Object.keys(css).map(k => {
         const obj = ts.createNode(ts.SyntaxKind.PropertyAssignment) as ts.PropertyAssignment
         const key = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
         const value = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
@@ -49,7 +49,7 @@ function generateClassNameObj(sf: ts.SourceFile, cssPath: string): ts.ObjectLite
         obj.name = key
         obj.initializer = value
         return obj
-    }) as ts.NodeArray<ts.ObjectLiteralElementLike>
+    }))
 
     return classNameObj
 }
@@ -84,9 +84,9 @@ function importVisitor(sf: ts.SourceFile, node: ts.Node): ts.Node {
     cssVarStatement.declarationList = ts.createNode(ts.SyntaxKind.VariableDeclarationList) as ts.VariableDeclarationList
     varDecl = ts.createNode(ts.SyntaxKind.VariableDeclaration) as ts.VariableDeclaration
     varDecl.name = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
-    varDecl.name.text = importVar
+    varDecl.name.escaptedText = importVar as ts.__String
     varDecl.initializer = classNameObj
-    cssVarStatement.declarationList.declarations = [varDecl] as ts.NodeArray<ts.VariableDeclaration>
+    cssVarStatement.declarationList.declarations = ts.createNodeArray([varDecl])
     return cssVarStatement
 }
 
