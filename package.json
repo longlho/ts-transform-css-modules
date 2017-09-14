@@ -6,6 +6,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "test": "rm -rf test/fixture/*.js && mocha --compilers ts:ts-node/register",
+    "prettier": "prettier --print-width=120 --tab-width=4 --single-quote --trailing-comma=es5 --no-semi --parser=typescript --write 'src/**/*.ts*' || true",
     "prepublishOnly": "tsc"
   },
   "repository": {
@@ -27,16 +28,22 @@
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/fs-extra": "^4.0.2",
+    "@types/glob": "^5.0.32",
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.28",
     "chai": "^4.1.2",
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
     "mocha": "^3.5.3",
+    "pre-commit": "^1.2.2",
     "ts-node": "^3.3.0",
     "typescript": "^2.5.2"
   },
   "dependencies": {
     "css-modules-require-hook": "^4.2.2"
-  }
+  },
+  "pre-commit": [
+    "prettier",
+    "test"
+  ]
 }

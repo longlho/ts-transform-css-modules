@@ -9,6 +9,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "stripInternal": true,
+        "noImplicitAny": true,
         "jsx": "react",
         "outDir": "dist"
     },

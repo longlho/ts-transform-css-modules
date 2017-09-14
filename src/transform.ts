@@ -39,19 +39,11 @@ function generateClassNameObj(sf: ts.SourceFile, cssPath: string): ts.ObjectLite
     }
 
     const css = require(cssPath)
-    const classNameObj = ts.createNode(ts.SyntaxKind.ObjectLiteralExpression) as ts.ObjectLiteralExpression
-    classNameObj.properties = ts.createNodeArray(Object.keys(css).map(k => {
-        const obj = ts.createNode(ts.SyntaxKind.PropertyAssignment) as ts.PropertyAssignment
-        const key = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
-        const value = ts.createNode(ts.SyntaxKind.StringLiteral) as ts.StringLiteral
-        key.text = k
-        value.text = css[k]
-        obj.name = key
-        obj.initializer = value
-        return obj
-    }))
-
-    return classNameObj
+    return ts.createObjectLiteral(
+        ts.createNodeArray(
+            Object.keys(css).map(k => ts.createPropertyAssignment(ts.createLiteral(k), ts.createLiteral(css[k])))
+        )
+    )
 }
 
 function importVisitor(sf: ts.SourceFile, node: ts.Node): ts.Node {
@@ -75,19 +67,14 @@ function importVisitor(sf: ts.SourceFile, node: ts.Node): ts.Node {
     if (namedBindings.kind !== ts.SyntaxKind.NamespaceImport) {
         return
     }
-    let varDecl
-    const cssVarStatement = ts.createNode(ts.SyntaxKind.VariableStatement) as ts.VariableStatement
 
     const importVar = namedBindings.name.getText()
-    // Create 'var css = {}'
 
-    cssVarStatement.declarationList = ts.createNode(ts.SyntaxKind.VariableDeclarationList) as ts.VariableDeclarationList
-    varDecl = ts.createNode(ts.SyntaxKind.VariableDeclaration) as ts.VariableDeclaration
-    varDecl.name = ts.createNode(ts.SyntaxKind.Identifier) as ts.Identifier
-    varDecl.name.escaptedText = importVar as ts.__String
-    varDecl.initializer = classNameObj
-    cssVarStatement.declarationList.declarations = ts.createNodeArray([varDecl])
-    return cssVarStatement
+    // Create 'var css = {}'
+    return ts.createVariableStatement(
+        undefined,
+        ts.createVariableDeclarationList([ts.createVariableDeclaration(importVar, undefined, classNameObj)])
+    )
 }
 
 function visitor(ctx: ts.TransformationContext, sf: ts.SourceFile) {
