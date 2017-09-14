@@ -1,7 +1,7 @@
 # ts-transform-css-modules
 
-![npm](https://img.shields.io/npm/v/ts-transform-css-modules.svg)
-![travis](https://travis-ci.org/longlho/ts-transform-css-modules.svg?branch=master)
+[![npm version](https://badge.fury.io/js/ts-transform-css-modules.svg)](https://badge.fury.io/js/ts-transform-css-modules)
+[![travis](https://travis-ci.org/longlho/ts-transform-css-modules.svg?branch=master)](https://travis-ci.org/longlho/ts-transform-css-modules)
 
 Extract css class names from required css module files for TypeScript. This plugin is based on [css-modules-require-hook](https://github.com/css-modules/css-modules-require-hook) and so constructor opts are from that repo.
 
