@@ -1,11 +1,11 @@
 {
   "name": "ts-transform-css-modules",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Extract CSS classnames in TS files",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "rm -rf test/fixture/*.js && mocha --compilers ts:ts-node/register",
+    "test": "rm -rf test/fixture/*.js && mocha --require ts-node/register --recursive  test/**/*.test.ts",
     "prettier": "prettier --print-width=120 --tab-width=4 --single-quote --trailing-comma=es5 --no-semi --parser=typescript --write 'src/**/*.ts*' || true",
     "prepublishOnly": "tsc"
   },
@@ -34,7 +34,7 @@
     "chai": "^4.1.2",
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
-    "mocha": "^3.5.3",
+    "mocha": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.7.0",
     "ts-node": "^3.3.0",
