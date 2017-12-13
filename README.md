@@ -1,5 +1,7 @@
 # ts-transform-css-modules
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/longlho/ts-transform-css-modules.svg)](https://greenkeeper.io/)
+
 [![npm version](https://badge.fury.io/js/ts-transform-css-modules.svg)](https://badge.fury.io/js/ts-transform-css-modules)
 [![travis](https://travis-ci.org/longlho/ts-transform-css-modules.svg?branch=master)](https://travis-ci.org/longlho/ts-transform-css-modules)
 
