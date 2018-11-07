@@ -1,11 +1,13 @@
-import * as foo from './foo.css'
-const bar = require('./bar.css')
-import './foo.css'
+import * as foo from "./foo.css";
+import * as absoluteFoo from "some_alias/foo.css";
+const bar = require("./bar.css");
+import "./foo.css";
 
-export default function getCss () {
-    return {
-        ...foo,
-        ...bar,
-        ...require('./baz.css')
-    }
+export default function getCss() {
+  return {
+    ...foo,
+    ...bar,
+    ...require("./baz.css"),
+    absoluteFoo
+  };
 }

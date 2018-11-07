@@ -31,3 +31,7 @@ import { button, badge } from 'foo.css'
 ## Options
 
 See [css-modules-require-hook](https://github.com/css-modules/css-modules-require-hook#tuning-options) for a list of options.
+
+### Custom Options
+
+`tsImportResolver (path: string): string`: This callback function allows you to override import path in `ImportDeclaration` for every CSS file we encounter. This is useful when dealing with project that uses `paths` aliases in tsconfig. This might not be necessary once https://github.com/Microsoft/TypeScript/issues/28276 is resolved.
