@@ -59,7 +59,7 @@ function generateClassNameObj(
   // Bc cssPath includes ' or "
   cssPath = cssPath.substring(1, cssPath.length - 1);
 
-  let resolvedPath = cssPath;
+  let resolvedPath: string;
   let css: any;
   if (typeof tsImportResolver === "function") {
     resolvedPath = tsImportResolver(cssPath);
