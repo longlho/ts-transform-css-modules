@@ -1,6 +1,6 @@
 {
   "name": "ts-transform-css-modules",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Extract CSS classnames in TS files",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -37,6 +37,7 @@
     "mocha": "^5.2.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.3",
+    "sourcemap-validator": "^1.1.0",
     "ts-node": "7",
     "typescript": "3"
   },

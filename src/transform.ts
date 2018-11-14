@@ -1,5 +1,6 @@
 import * as ts from "typescript";
 import { resolve, dirname } from "path";
+import { readFileSync } from "fs";
 
 export type GenerateScopedNameFn = (
   name: string,
@@ -51,29 +52,33 @@ export interface Opts {
 
 const CSS_EXTENSION_REGEX = /\.css['"]$/;
 
-function generateClassNameObj(
-  sf: ts.SourceFile,
+function resolveCssPath(
   cssPath: string,
+  sf: ts.SourceFile,
   tsImportResolver: Opts["tsImportResolver"]
-): ts.ObjectLiteralExpression {
+): string {
   // Bc cssPath includes ' or "
   cssPath = cssPath.substring(1, cssPath.length - 1);
 
   let resolvedPath: string;
-  let css: any;
   if (typeof tsImportResolver === "function") {
     resolvedPath = tsImportResolver(cssPath);
   }
   if (typeof resolvedPath !== "string") {
     if (cssPath.startsWith(".")) {
       const sourcePath = sf.fileName;
-      resolvedPath = resolve(dirname(sourcePath), cssPath);
-    } else {
-      resolvedPath = cssPath;
+      return resolve(dirname(sourcePath), cssPath);
     }
+    return cssPath;
   }
 
-  css = require(resolvedPath);
+  return resolvedPath;
+}
+
+function generateClassNameObj(
+  resolvedCssPath: string
+): ts.ObjectLiteralExpression {
+  const css = require(resolvedCssPath);
   return ts.createObjectLiteral(
     ts.createNodeArray(
       Object.keys(css).map(k =>
@@ -87,28 +92,26 @@ function generateClassNameObj(
 }
 
 function importVisitor(
-  sf: ts.SourceFile,
-  node: ts.Node,
-  tsImportResolver: Opts["tsImportResolver"]
+  resolvedCssPath: string,
+  node: ts.ImportDeclaration
 ): ts.Node {
-  let cssPath: string = (node as ts.ImportDeclaration).moduleSpecifier.getText();
   let classNameObj;
   try {
-    classNameObj = generateClassNameObj(sf, cssPath, tsImportResolver);
+    classNameObj = generateClassNameObj(resolvedCssPath);
   } catch (e) {
     console.error(e);
     return;
   }
 
   // No import clause, skip
-  if (!(node as ts.ImportDeclaration).importClause) {
+  if (!node.importClause) {
     return;
   }
 
   // This is the "foo" from "import * as foo from 'foo.css'"
-  const { namedBindings } = (node as ts.ImportDeclaration).importClause;
+  const { namedBindings } = node.importClause;
   // Dealing with "import * as css from 'foo.css'" only since namedImports variables get mangled
-  if (namedBindings.kind !== ts.SyntaxKind.NamespaceImport) {
+  if (!ts.isNamespaceImport(namedBindings)) {
     return;
   }
 
@@ -129,36 +132,47 @@ function visitor(
   tsImportResolver: Opts["tsImportResolver"]
 ) {
   const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
-    switch (node.kind) {
-      case ts.SyntaxKind.ImportDeclaration:
-        if (
-          CSS_EXTENSION_REGEX.test(
-            (node as ts.ImportDeclaration).moduleSpecifier.getText()
-          )
-        ) {
-          return (
-            importVisitor(sf, node, tsImportResolver) ||
-            ts.visitEachChild(node, visitor, ctx)
-          );
+    let newNode: ts.Node;
+    let cssPath: string;
+    if (ts.isImportDeclaration(node)) {
+      if (CSS_EXTENSION_REGEX.test(node.moduleSpecifier.getText())) {
+        cssPath = resolveCssPath(
+          node.moduleSpecifier.getText(),
+          sf,
+          tsImportResolver
+        );
+        newNode = importVisitor(cssPath, node);
+      }
+    } else if (ts.isCallExpression(node)) {
+      if (
+        node.expression.getText() === "require" &&
+        CSS_EXTENSION_REGEX.test(node.arguments[0].getText())
+      ) {
+        cssPath = resolveCssPath(
+          node.arguments[0].getText(),
+          sf,
+          tsImportResolver
+        );
+        try {
+          newNode = generateClassNameObj(cssPath);
+        } catch (e) {
+          console.error(e);
         }
-        break;
-      case ts.SyntaxKind.CallExpression:
-        if (
-          (node as ts.CallExpression).expression.getText() === "require" &&
-          CSS_EXTENSION_REGEX.test(
-            (node as ts.CallExpression).arguments[0].getText()
-          )
-        ) {
-          try {
-            return generateClassNameObj(
-              sf,
-              (node as ts.CallExpression).arguments[0].getText(),
-              tsImportResolver
-            );
-          } catch (e) {
-            console.error(e);
-          }
-        }
+      }
+    }
+
+    if (newNode) {
+      const externalCssSource = ts.createSourceMapSource(
+        cssPath,
+        readFileSync(cssPath, "utf-8")
+      );
+      ts.setSourceMapRange(newNode, {
+        source: externalCssSource,
+        pos: node.pos,
+        end: node.end
+      });
+
+      return newNode;
     }
     return ts.visitEachChild(node, visitor, ctx);
   };

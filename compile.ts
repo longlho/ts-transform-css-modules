@@ -7,7 +7,7 @@ declare module "fs-extra" {
   export function outputJsonSync(file: string, data: any, opts?: {}): void;
 }
 
-const CJS_CONFIG = {
+const CJS_CONFIG: ts.CompilerOptions = {
   experimentalDecorators: true,
   jsx: ts.JsxEmit.React,
   module: ts.ModuleKind.CommonJS,
@@ -16,6 +16,7 @@ const CJS_CONFIG = {
   noUnusedLocals: true,
   noUnusedParameters: true,
   stripInternal: true,
+  sourceMap: true,
   target: ts.ScriptTarget.ES2015
 };
 
