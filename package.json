@@ -38,7 +38,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.3",
     "sourcemap-validator": "^1.1.0",
-    "ts-node": "7",
+    "ts-node": "^8.0.2",
     "typescript": "3"
   },
   "dependencies": {
